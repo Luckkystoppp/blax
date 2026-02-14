@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Settings - Admin Only</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo">Cloud Maxter </div>
+    <div class="nav-items">
+      <a href="/dashboard" class="nav-item"><span>📊</span> Dashboard</a>
+      <a href="/profile" class="nav-item"><span>👤</span> Profile</a>
+      <a href="/shop" class="nav-item active"><span>🛒</span> Shop TXT</a>
+      <a href="/hotmail" class="nav-item"><span>📧</span> Hotmail</a>
+      <a href="/ulp" class="nav-item"><span>🔍</span> ULP</a>
+      <a href="/bin" class="nav-item"><span>💳</span> BIN</a>
+      <a href="/settings" class="nav-item" id="sets" style="display:none"><span>⚙️</span> Settings</a>
+    </div>
+  </div>
+
+  <div class="header">
+    <div class="header-title">Settings - Admin Panel</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="user-info">
+        <div class="user-avatar">A</div>
+        <div>ADMIN</div>
+      </div>
+      <button onclick="logout()" class="btn btn-danger btn-sm">Exit</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Key Generation -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <div class="card-title">🔑 Generate Login Keys</div>
+      </div>
+      <div class="card-body">
+        <div class="grid grid-3">
+          <div class="input-group">
+            <label class="input-label">Key Name * (Required)</label>
+            <input id="keyName" class="input" placeholder="e.g., John's Key, Test Key">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Duration</label>
+            <select id="dur" class="select">
+              <option value="1day">1 Day</option>
+              <option value="1week">1 Week</option>
+              <option value="1month" selected>1 Month</option>
+              <option value="3months">3 Months</option>
+              <option value="1year">1 Year</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label class="input-label" style="opacity:0">.</label>
+            <button onclick="genKey()" class="btn btn-primary">✨ Generate Key</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generated Keys List -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <div class="card-title">📋 Generated Keys (Dead Key System)</div>
+      </div>
+      <div class="card-body">
+        <div class="table-container">
+          <table class="table" id="keys"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload Hotmail -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <div class="card-title">📧 Upload Hotmail (Max 50M lines)</div>
+      </div>
+      <div class="card-body">
+        <form id="hotmailForm">
+          <div class="grid grid-2">
+            <div class="input-group">
+              <label class="input-label">Name</label>
+              <input id="hotmailName" class="input" placeholder="Hotmail collection name">
+            </div>
+            <div class="input-group">
+              <label class="input-label">Note</label>
+              <input id="hotmailNote" class="input" placeholder="Optional note">
+            </div>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Image (Optional)</label>
+            <input type="file" id="hotmailImage" class="input" accept="image/*">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Content</label>
+            <textarea id="hotmailContent" class="textarea" rows="6" placeholder="Paste hotmail content here... (Max 50,000,000 lines)"></textarea>
+          </div>
+          <button type="button" onclick="createHotmail()" class="btn btn-primary">📧 Upload Hotmail</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Hotmail List -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <div class="card-title">📧 Uploaded Hotmails</div>
+      </div>
+      <div class="card-body">
+        <div class="table-container">
+          <table class="table" id="hotmailList"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload Shop -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <div class="card-title">🛒 Upload Shop TXT (Max 50M lines)</div>
+      </div>
+      <div class="card-body">
+        <form id="shopForm">
+          <div class="grid grid-2">
+            <div class="input-group">
+              <label class="input-label">Name</label>
+              <input id="shopName" class="input" placeholder="Shop collection name">
+            </div>
+            <div class="input-group">
+              <label class="input-label">Note</label>
+              <input id="shopNote" class="input" placeholder="Optional note">
+            </div>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Image (Optional)</label>
+            <input type="file" id="shopImage" class="input" accept="image/*">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Content</label>
+            <textarea id="shopContent" class="textarea" rows="6" placeholder="Paste shop content here... (Max 50,000,000 lines)"></textarea>
+          </div>
+          <button type="button" onclick="createShop()" class="btn btn-primary">🛒 Upload Shop</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Shop List -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <div class="card-title">🛒 Uploaded Shops</div>
+      </div>
+      <div class="card-body">
+        <div class="table-container">
+          <table class="table" id="shopList"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="card mb-4">
+      <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+        <div class="card-title">📢 Notifications</div>
+        <button onclick="showNotif()" class="btn btn-primary btn-sm">+ Add</button>
+      </div>
+      <div class="card-body">
+        <div class="table-container">
+          <table class="table" id="notifs"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Notes -->
+    <div class="card">
+      <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+        <div class="card-title">📝 Admin Notes</div>
+        <button onclick="showNote()" class="btn btn-primary btn-sm">+ Add</button>
+      </div>
+      <div class="card-body">
+        <div class="table-container">
+          <table class="table" id="notes"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Modal -->
+  <div id="notifModal" class="modal-overlay" style="display:none">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Create Notification</div>
+        <button class="modal-close" onclick="closeNotif()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <label class="input-label">Title</label>
+          <input type="text" id="notifTitle" class="input">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Content</label>
+          <textarea id="notifContent" class="textarea"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeNotif()" class="btn btn-danger">Cancel</button>
+        <button onclick="createNotif()" class="btn btn-primary">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Note Modal -->
+  <div id="noteModal" class="modal-overlay" style="display:none">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Create Admin Note</div>
+        <button class="modal-close" onclick="closeNote()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <label class="input-label">Title</label>
+          <input type="text" id="noteTitle" class="input">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Content</label>
+          <textarea id="noteContent" class="textarea"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeNote()" class="btn btn-danger">Cancel</button>
+        <button onclick="createNote()" class="btn btn-primary">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    
+    if (!token || localStorage.getItem('role') !== 'admin') {
+      location.href = '/dashboard';
+    }
+
+    function toast(msg, type = 'success') {
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      t.innerHTML = `<div class="toast-message">${msg}</div><button class="toast-close" onclick="this.parentElement.remove()">×</button>`;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 4000);
+    }
+
+    // Key Generation - FIXED
+    async function genKey() {
+      const keyName = document.getElementById('keyName').value.trim();
+      const dur = document.getElementById('dur').value;
+      
+      if (!keyName) {
+        toast('⚠️ Please enter a key name!', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/genkey', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token
+          },
+          body: JSON.stringify({ duration: dur, keyName: keyName })
+        });
+
+        const data = await res.json();
+        
+        if (data.success) {
+          toast(`✅ Key generated: ${data.key.key}`);
+          document.getElementById('keyName').value = '';
+          loadKeys();
+        } else {
+          toast(data.message || 'Generation failed', 'error');
+        }
+      } catch (e) {
+        toast('Error: ' + e.message, 'error');
+      }
+    }
+
+    async function loadKeys() {
+      try {
+        const res = await fetch('/api/keys', {
+          headers: { Authorization: token }
+        });
+        const keys = await res.json();
+
+        let html = '<thead><tr><th>KEY NAME</th><th>KEY</th><th>DURATION</th><th>STATUS</th><th>EXPIRES</th><th>ACTION</th></tr></thead><tbody>';
+        
+        if (keys.length === 0) {
+          html += '<tr><td colspan="6" style="text-align:center;padding:20px;color:#8b949e">No keys generated</td></tr>';
+        } else {
+          keys.forEach(k => {
+            const statusClass = k.isExpired ? 'badge-danger' : (k.role === 'admin' ? 'badge-warning' : 'badge-success');
+            const statusText = k.isExpired ? 'DEAD KEY' : (k.role === 'admin' ? 'ADMIN' : 'ACTIVE');
+            const expires = k.expiresAt ? new Date(k.expiresAt).toLocaleString() : 'Never';
+            
+            html += `<tr>
+              <td style="font-weight:600;color:#e6edf3">${k.keyName || 'Unnamed'}</td>
+              <td style="font-family:'JetBrains Mono';color:#58a6ff;font-size:11px">${k.key}</td>
+              <td><span class="badge badge-purple">${k.duration || 'N/A'}</span></td>
+              <td><span class="badge ${statusClass}">${statusText}</span></td>
+              <td style="color:#8b949e;font-size:12px">${expires}</td>
+              <td>
+                ${k.role !== 'admin' ? `<button onclick="delKey(${k.id})" class="btn btn-danger btn-sm">Delete</button>` : '<span style="color:#8b949e">-</span>'}
+              </td>
+            </tr>`;
+          });
+        }
+        
+        html += '</tbody>';
+        document.getElementById('keys').innerHTML = html;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function delKey(id) {
+      if (!confirm('Delete this key?')) return;
+      
+      try {
+        await fetch('/api/deletekey', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token
+          },
+          body: JSON.stringify({ id })
+        });
+        toast('Key deleted');
+        loadKeys();
+      } catch (e) {
+        toast('Error deleting key', 'error');
+      }
+    }
+
+    // Hotmail functions
+    async function createHotmail() {
+      const name = document.getElementById('hotmailName').value.trim();
+      const note = document.getElementById('hotmailNote').value.trim();
+      const content = document.getElementById('hotmailContent').value;
+      const image = document.getElementById('hotmailImage').files[0];
+
+      if (!name || !content) {
+        toast('Name and content required', 'error');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('note', note);
+      formData.append('content', content);
+      if (image) formData.append('image', image);
+
+      try {
+        toast('Uploading...', 'success');
+        const res = await fetch('/api/createhotmail', {
+          method: 'POST',
+          headers: { Authorization: token },
+          body: formData
+        });
+
+        const data = await res.json();
+        
+        if (data.success) {
+          toast('Hotmail uploaded!');
+          document.getElementById('hotmailForm').reset();
+          loadHotmails();
+        } else {
+          toast(data.message || 'Upload failed', 'error');
+        }
+      } catch (e) {
+        toast('Error: ' + e.message, 'error');
+      }
+    }
+
+    async function loadHotmails() {
+      try {
+        const res = await fetch('/api/hotmails', {
+          headers: { Authorization: token }
+        });
+        const hotmails = await res.json();
+
+        let html = '<thead><tr><th>NAME</th><th>LINES</th><th>NOTE</th><th>CREATED</th><th>ACTION</th></tr></thead><tbody>';
+        
+        if (hotmails.length === 0) {
+          html += '<tr><td colspan="5" style="text-align:center;padding:20px;color:#8b949e">No hotmails uploaded</td></tr>';
+        } else {
+          hotmails.forEach(h => {
+            html += `<tr>
+              <td style="font-weight:600;color:#e6edf3">${h.name}</td>
+              <td style="font-family:'JetBrains Mono';color:#58a6ff">${h.lines.toLocaleString()}</td>
+              <td style="color:#8b949e">${h.note || '-'}</td>
+              <td style="color:#8b949e;font-size:12px">${new Date(h.created).toLocaleString()}</td>
+              <td><button onclick="delHotmail(${h.id})" class="btn btn-danger btn-sm">Delete</button></td>
+            </tr>`;
+          });
+        }
+        
+        html += '</tbody>';
+        document.getElementById('hotmailList').innerHTML = html;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function delHotmail(id) {
+      if (!confirm('Delete this hotmail?')) return;
+      
+      try {
+        await fetch('/api/deletehotmail', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token
+          },
+          body: JSON.stringify({ id })
+        });
+        toast('Hotmail deleted');
+        loadHotmails();
+      } catch (e) {
+        toast('Error deleting hotmail', 'error');
+      }
+    }
+
+    // Shop functions
+    async function createShop() {
+      const name = document.getElementById('shopName').value.trim();
+      const note = document.getElementById('shopNote').value.trim();
+      const content = document.getElementById('shopContent').value;
+      const image = document.getElementById('shopImage').files[0];
+
+      if (!name || !content) {
+        toast('Name and content required', 'error');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('note', note);
+      formData.append('content', content);
+      if (image) formData.append('image', image);
+
+      try {
+        toast('Uploading...', 'success');
+        const res = await fetch('/api/createshop', {
+          method: 'POST',
+          headers: { Authorization: token },
+          body: formData
+        });
+
+        const data = await res.json();
+        
+        if (data.success) {
+          toast('Shop uploaded!');
+          document.getElementById('shopForm').reset();
+          loadShops();
+        } else {
+          toast(data.message || 'Upload failed', 'error');
+        }
+      } catch (e) {
+        toast('Error: ' + e.message, 'error');
+      }
+    }
+
+    async function loadShops() {
+      try {
+        const res = await fetch('/api/shops', {
+          headers: { Authorization: token }
+        });
+        const shops = await res.json();
+
+        let html = '<thead><tr><th>NAME</th><th>LINES</th><th>NOTE</th><th>CREATED</th><th>ACTION</th></tr></thead><tbody>';
+        
+        if (shops.length === 0) {
+          html += '<tr><td colspan="5" style="text-align:center;padding:20px;color:#8b949e">No shops uploaded</td></tr>';
+        } else {
+          shops.forEach(s => {
+            html += `<tr>
+              <td style="font-weight:600;color:#e6edf3">${s.name}</td>
+              <td style="font-family:'JetBrains Mono';color:#58a6ff">${s.lines.toLocaleString()}</td>
+              <td style="color:#8b949e">${s.note || '-'}</td>
+              <td style="color:#8b949e;font-size:12px">${new Date(s.created).toLocaleString()}</td>
+              <td><button onclick="delShop(${s.id})" class="btn btn-danger btn-sm">Delete</button></td>
+            </tr>`;
+          });
+        }
+        
+        html += '</tbody>';
+        document.getElementById('shopList').innerHTML = html;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function delShop(id) {
+      if (!confirm('Delete this shop?')) return;
+      
+      try {
+        await fetch('/api/deleteshop', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token
+          },
+          body: JSON.stringify({ id })
+        });
+        toast('Shop deleted');
+        loadShops();
+      } catch (e) {
+        toast('Error deleting shop', 'error');
+      }
+    }
+
+    // Notifications
+    function showNotif() {
+      document.getElementById('notifModal').style.display = 'flex';
+    }
+
+    function closeNotif() {
+      document.getElementById('notifModal').style.display = 'none';
+      document.getElementById('notifTitle').value = '';
+      document.getElementById('notifContent').value = '';
+    }
+
+    async function createNotif() {
+      const title = document.getElementById('notifTitle').value.trim();
+      const content = document.getElementById('notifContent').value.trim();
+
+      if (!title || !content) {
+        toast('Fill all fields', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/createnotification', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token
+          },
+          body: JSON.stringify({ title, content })
+        });
+
+        if ((await res.json()).success) {
+          toast('Notification created');
+          closeNotif();
+          loadNotifs();
+        }
+      } catch (e) {
+        toast('Error', 'error');
+      }
+    }
+
+    async function loadNotifs() {
+      try {
+        const res = await fetch('/api/notifications', {
+          headers: { Authorization: token }
+        });
+        const n = await res.json();
+
+        let html = '<thead><tr><th>TITLE</th><th>CONTENT</th><th>CREATED</th><th>ACTION</th></tr></thead><tbody>';
+        
+        if (n.length === 0) {
+          html += '<tr><td colspan="4" style="text-align:center;padding:20px;color:#8b949e">No notifications</td></tr>';
+        } else {
+          n.forEach(x => {
+            html += `<tr>
+              <td style="font-weight:600;color:#e6edf3">${x.title}</td>
+              <td style="color:#c9d1d9">${x.content}</td>
+              <td style="color:#8b949e;font-size:12px">${new Date(x.created).toLocaleString()}</td>
+              <td><button onclick="delNotif(${x.id})" class="btn btn-danger btn-sm">Delete</button></td>
+            </tr>`;
+          });
+        }
+        
+        html += '</tbody>';
+        document.getElementById('notifs').innerHTML = html;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function delNotif(id) {
+      if (!confirm('Delete?')) return;
+      
+      try {
+        await fetch('/api/deletenotification', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token
+          },
+          body: JSON.stringify({ id })
+        });
+        toast('Deleted');
+        loadNotifs();
+      } catch (e) {
+        toast('Error', 'error');
+      }
+    }
+
+    // Admin Notes
+    function showNote() {
+      document.getElementById('noteModal').style.display = 'flex';
+    }
+
+    function closeNote() {
+      document.getElementById('noteModal').style.display = 'none';
+      document.getElementById('noteTitle').value = '';
+      document.getElementById('noteContent').value = '';
+    }
+
+    async function createNote() {
+      const title = document.getElementById('noteTitle').value.trim();
+      const content = document.getElementById('noteContent').value.trim();
+
+      if (!title || !content) {
+        toast('Fill all fields', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/createadminnote', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token
+          },
+          body: JSON.stringify({ title, content })
+        });
+
+        if ((await res.json()).success) {
+          toast('Note created');
+          closeNote();
+          loadNotes();
+        }
+      } catch (e) {
+        toast('Error', 'error');
+      }
+    }
+
+    async function loadNotes() {
+      try {
+        const res = await fetch('/api/adminnotes', {
+          headers: { Authorization: token }
+        });
+        const n = await res.json();
+
+        let html = '<thead><tr><th>TITLE</th><th>CONTENT</th><th>CREATED</th><th>ACTION</th></tr></thead><tbody>';
+        
+        if (n.length === 0) {
+          html += '<tr><td colspan="4" style="text-align:center;padding:20px;color:#8b949e">No notes</td></tr>';
+        } else {
+          n.forEach(x => {
+            html += `<tr>
+              <td style="font-weight:600;color:#e6edf3">${x.title}</td>
+              <td style="color:#c9d1d9">${x.content}</td>
+              <td style="color:#8b949e;font-size:12px">${new Date(x.created).toLocaleString()}</td>
+              <td><button onclick="delNote(${x.id})" class="btn btn-danger btn-sm">Delete</button></td>
+            </tr>`;
+          });
+        }
+        
+        html += '</tbody>';
+        document.getElementById('notes').innerHTML = html;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function delNote(id) {
+      if (!confirm('Delete?')) return;
+      
+      try {
+        await fetch('/api/deleteadminnote', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token
+          },
+          body: JSON.stringify({ id })
+        });
+        toast('Deleted');
+        loadNotes();
+      } catch (e) {
+        toast('Error', 'error');
+      }
+    }
+
+    function logout() {
+      localStorage.clear();
+      location.href = '/login';
+    }
+
+    // Load all data on page load
+    loadKeys();
+    loadHotmails();
+    loadShops();
+    loadNotifs();
+    loadNotes();
+  </script>
+</body>
+</html>

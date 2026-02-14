@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Maxter Web 🎸</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            overflow-x: hidden;
+            position: relative;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0a0015, #14002b, #1a0033);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            color: #e0d4ff;
+        }
+
+        #particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: linear-gradient(45deg, #a78bfa, #c084fc);
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(139,92,246,0.7);
+            pointer-events: none;
+            animation: float 18s infinite linear;
+        }
+
+        @keyframes float {
+            0%   { transform: translateY(110vh) scale(0.3) rotate(0deg); opacity: 0; }
+            10%  { opacity: 0.9; }
+            90%  { opacity: 0.9; }
+            100% { transform: translateY(-30vh) scale(0.7) rotate(360deg); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            padding: 80px 20px;
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .title {
+            font-size: 5.5rem;
+            font-weight: 900;
+            margin: 0 0 1.2rem;
+            background: linear-gradient(90deg, #a78bfa, #ec4899, #c084fc, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientFlow 8s linear infinite;
+            text-shadow: 0 0 40px rgba(168,85,247,0.6);
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.6rem;
+            color: #d1b3ff;
+            margin-bottom: 5rem;
+            opacity: 0.9;
+            letter-spacing: 0.5px;
+        }
+
+        .section-card {
+            background: rgba(20, 10, 40, 0.55);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(139,92,246,0.35);
+            border-radius: 28px;
+            padding: 3.5rem 2.5rem;
+            margin-bottom: 5rem;
+            box-shadow: 0 20px 80px rgba(0,0,0,0.7), inset 0 0 30px rgba(139,92,246,0.08);
+        }
+
+        .section-title {
+            font-size: 2.8rem;
+            color: #c084fc;
+            margin-bottom: 3rem;
+            text-shadow: 0 0 20px rgba(192,132,252,0.5);
+        }
+
+        .gifts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.8rem;
+        }
+
+        .gift-item {
+            background: rgba(30,20,60,0.6);
+            border: 1px solid #6d28d9;
+            border-radius: 18px;
+            padding: 2.2rem 1.5rem;
+            transition: all 0.4s ease;
+            transform: translateZ(0);
+        }
+
+        .gift-item:hover {
+            transform: translateY(-12px) translateZ(40px) rotateX(6deg);
+            box-shadow: 0 25px 60px rgba(139,92,246,0.45);
+            border-color: #a78bfa;
+        }
+
+        .gift-emoji {
+            font-size: 3.2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .gift-text {
+            font-size: 1.3rem;
+            color: #e0d4ff;
+        }
+
+        .emoji-row {
+            font-size: 2.8rem;
+            margin: 3rem 0 1rem;
+            color: #f9e3ff;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin-top: 2rem;
+        }
+
+        .price-card {
+            background: rgba(25,15,50,0.65);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            border: 2px solid transparent;
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .price-card.pro {
+            border: 3px solid #a78bfa;
+            background: linear-gradient(135deg, rgba(139,92,246,0.18), rgba(192,132,252,0.12));
+            transform: scale(1.08);
+            z-index: 2;
+        }
+
+        .price-card:hover {
+            transform: translateY(-20px) scale(1.05);
+            box-shadow: 0 40px 100px rgba(139,92,246,0.55);
+        }
+
+        .price-amount {
+            font-size: 5.2rem;
+            font-weight: 900;
+            color: #c084fc;
+            margin: 0.5rem 0;
+            text-shadow: 0 0 25px rgba(192,132,252,0.6);
+        }
+
+        .price-equivalent {
+            font-size: 1.3rem;
+            color: #d1b3ff;
+            margin-bottom: 1.5rem;
+        }
+
+        .price-duration {
+            font-size: 2rem;
+            color: white;
+            margin: 2rem 0 2.5rem;
+            font-weight: 600;
+        }
+
+        .buy-btn {
+            width: 100%;
+            padding: 1.2rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .buy-btn.primary   { background: linear-gradient(90deg, #9333ea, #c026d3); color: white; }
+        .buy-btn.success   { background: linear-gradient(90deg, #10b981, #34d399); color: white; }
+
+        .buy-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+        }
+
+        .gift-note {
+            font-size: 1.5rem;
+            color: #d1b3ff;
+            margin-top: 4rem;
+            line-height: 1.6;
+        }
+
+        .slot-info {
+            font-size: 1.8rem;
+            color: #34d399;
+            margin: 3rem 0;
+            font-weight: 600;
+        }
+
+        .contact {
+            font-size: 2.2rem;
+            margin: 2rem 0 5rem;
+        }
+
+        .contact a {
+            color: #c084fc;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .login-circle {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 140px;
+            height: 140px;
+            background: linear-gradient(135deg, #7c3aed, #c026d3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 15px 50px rgba(124,58,237,0.6), inset 0 0 30px rgba(255,255,255,0.15);
+            z-index: 100;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .login-circle:hover {
+            transform: scale(1.12) rotate(8deg);
+            box-shadow: 0 25px 70px rgba(124,58,237,0.8);
+        }
+
+        .login-circle span {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-align: center;
+            text-shadow: 0 0 15px rgba(0,0,0,0.6);
+        }
+
+        @media (max-width: 768px) {
+            .title { font-size: 4rem; }
+            .pricing-grid { grid-template-columns: 1fr; }
+            .login-circle { width: 110px; height: 110px; top: 20px; right: 20px; }
+            .login-circle span { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="particles"></div>
+
+    <!-- Floating Circular Login Button (top-right) -->
+    <a href="/login" class="login-circle">
+        <span>LOGIN</span>
+    </a>
+
+    <div class="container">
+
+        <h1 class="title">🎸 Cloud Maxter Web 🎸</h1>
+        <p class="subtitle">🛸 Unlike other clouds — this is your gateway to exclusive daily gifts</p>
+
+        <!-- What You Receive -->
+        <div class="section-card">
+            <h2 class="section-title">What You Receive 🔥</h2>
+            <div class="gifts-grid">
+                <div class="gift-item"><span class="gift-emoji">➡️</span><p class="gift-text">Fresh ULP Drops</p></div>
+                <div class="gift-item"><span class="gift-emoji">➡️</span><p class="gift-text">Live / Uncheck Card Drops</p></div>
+                <div class="gift-item"><span class="gift-emoji">➡️</span><p class="gift-text">Fresh Hotmail Uploads</p></div>
+                <div class="gift-item"><span class="gift-emoji">➡️</span><p class="gift-text">BIN Checker</p></div>
+                <div class="gift-item"><span class="gift-emoji">➡️</span><p class="gift-text">ULP Search – 5 servers, 1.5TB+</p></div>
+                <div class="gift-item"><span class="gift-emoji">➡️</span><p class="gift-text">Private Cookies</p></div>
+            </div>
+            <div class="emoji-row">😉 😌 😍 🥰</div>
+        </div>
+
+        <!-- Pricing -->
+        <div class="section-card">
+            <h2 class="section-title">Pricing Plans</h2>
+            <div class="pricing-grid">
+                <div class="price-card">
+                    <div class="price-amount">$1</div>
+                    <div class="price-equivalent">≈ 20,000 VNĐ</div>
+                    <div class="price-duration">1 Day</div>
+                    <button onclick="buyKey()" class="buy-btn primary">Buy Now</button>
+                </div>
+
+                <div class="price-card pro">
+                    <div class="price-amount">$5</div>
+                    <div class="price-equivalent">≈ 120,000 VNĐ</div>
+                    <div class="price-duration">1 Week</div>
+                    <button onclick="buyKey()" class="buy-btn success">Buy Now</button>
+                </div>
+
+                <div class="price-card">
+                    <div class="price-amount">$20</div>
+                    <div class="price-equivalent">≈ 500,000 VNĐ</div>
+                    <div class="price-duration">1 Month</div>
+                    <button onclick="buyKey()" class="buy-btn primary">Buy Now</button>
+                </div>
+            </div>
+
+            <p class="gift-note">
+                After purchase: <strong>2 Keys Gifted</strong> — 1 for you + 1 for your friend (same plan)!
+            </p>
+        </div>
+
+        <div class="slot-info">👍 Available Slots: <strong>30/0</strong></div>
+
+        <div class="contact">
+            🤖 <a href="https://t.me/diepvienmeobeo" target="_blank">@diepvienmeobeo</a>
+        </div>
+
+    </div>
+
+    <script>
+        // Telegram redirect
+        function buyKey() {
+            window.open('https://t.me/diepvienmeobeo', '_blank');
+        }
+
+        // Particles
+        const particles = document.getElementById('particles');
+        function spawnParticle() {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            const size = Math.random() * 5 + 3;
+            p.style.width = p.style.height = size + 'px';
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDuration = Math.random() * 12 + 12 + 's';
+            p.style.animationDelay = Math.random() * 6 + 's';
+            particles.appendChild(p);
+            setTimeout(() => p.remove(), 30000);
+        }
+        setInterval(spawnParticle, 350);
+
+        // Fade-in animation
+        document.querySelectorAll('.section-card, .title, .subtitle, .slot-info, .contact').forEach((el, i) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(80px)';
+            setTimeout(() => {
+                el.style.transition = 'all 1.4s ease-out';
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, 300 + i * 180);
+        });
+    </script>
+</body>
+</html>

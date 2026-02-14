@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Profile - My Account</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo">Cloud Maxter </div>
+    <div class="nav-items">
+      <a href="/dashboard" class="nav-item"><span>📊</span> Dashboard</a>
+      <a href="/profile" class="nav-item"><span>👤</span> Profile</a>
+      <a href="/shop" class="nav-item active"><span>🛒</span> Shop TXT</a>
+      <a href="/hotmail" class="nav-item"><span>📧</span> Hotmail</a>
+      <a href="/ulp" class="nav-item"><span>🔍</span> ULP</a>
+      <a href="/bin" class="nav-item"><span>💳</span> BIN</a>
+      <a href="/settings" class="nav-item" id="sets" style="display:none"><span>⚙️</span> Settings</a>
+    </div>
+  </div>
+
+  <div class="header">
+    <div class="header-title">My Profile</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="user-info">
+        <div class="user-avatar">A</div>
+        <div id="roleDisplay"></div>
+      </div>
+      <button onclick="logout()" class="btn btn-danger btn-sm">Exit</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Profile Card -->
+    <div class="profile-card" id="profileCard" style="margin-bottom:24px">
+      <div class="profile-avatar-large" id="avatar">A</div>
+      <div class="profile-name" id="keyName">Loading...</div>
+      <div class="profile-role" id="role"></div>
+      
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="profile-stat-label">Key Status</div>
+          <div class="profile-stat-value" id="keyStatus">Active</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-label">Days Remaining</div>
+          <div class="profile-stat-value" id="daysRemaining">-</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Information -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <div class="card-title">🔑 Key Information</div>
+      </div>
+      <div class="card-body">
+        <div class="grid grid-2">
+          <div class="input-group">
+            <label class="input-label">Your Key</label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="keyValue" class="input" readonly style="font-family:'JetBrains Mono';background:var(--bg-tertiary)">
+              <button onclick="copyKey()" class="btn btn-primary btn-sm" style="white-space:nowrap">📋 Copy</button>
+            </div>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Created Date</label>
+            <input type="text" id="createdDate" class="input" readonly style="background:var(--bg-tertiary)">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Expiry Date</label>
+            <input type="text" id="expiryDate" class="input" readonly style="background:var(--bg-tertiary)">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Last Login</label>
+            <input type="text" id="lastLogin" class="input" readonly style="background:var(--bg-tertiary)">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Session -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <div class="card-title">🌐 Current Session</div>
+      </div>
+      <div class="card-body">
+        <div class="notification-box" style="background:linear-gradient(135deg,rgba(139,92,246,0.1) 0%,transparent 100%)">
+          <div class="notification-title">Last Login IP Address</div>
+          <div class="notification-content">
+            <span style="font-family:'JetBrains Mono';color:var(--purple-light);font-size:16px;font-weight:600" id="lastIP">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login History -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📜 Login History (Last 10 Logins)</div>
+      </div>
+      <div class="card-body">
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>IP ADDRESS</th>
+                <th>USER AGENT</th>
+                <th>TIMESTAMP</th>
+              </tr>
+            </thead>
+            <tbody id="loginHistory">
+              <tr>
+                <td colspan="4" style="text-align:center;padding:20px;color:#8b949e">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+    
+    if (!token) {
+      location.href = '/login';
+    }
+    
+    document.getElementById('roleDisplay').textContent = role.toUpperCase();
+    if (role === 'admin') {
+      document.getElementById('sets').style.display = 'flex';
+    }
+
+    async function loadProfile() {
+      try {
+        const res = await fetch('/api/profile', {
+          headers: { Authorization: token }
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          const profile = data.profile;
+          
+          // Update profile card
+          document.getElementById('keyName').textContent = profile.keyName;
+          document.getElementById('role').textContent = profile.role.toUpperCase();
+          document.getElementById('avatar').textContent = profile.keyName.charAt(0).toUpperCase();
+          
+          // Update key status
+          const isExpired = profile.daysRemaining === 'Expired';
+          const isAdmin = profile.role === 'admin';
+          
+          if (isAdmin) {
+            document.getElementById('keyStatus').textContent = 'ADMIN';
+            document.getElementById('keyStatus').style.color = '#fbbf24';
+            document.getElementById('daysRemaining').textContent = 'Never';
+            document.getElementById('daysRemaining').style.color = '#10b981';
+          } else if (isExpired) {
+            document.getElementById('keyStatus').textContent = 'Expired';
+            document.getElementById('keyStatus').style.color = '#ef4444';
+            document.getElementById('daysRemaining').textContent = '0';
+            document.getElementById('daysRemaining').style.color = '#ef4444';
+          } else {
+            document.getElementById('keyStatus').textContent = 'Active';
+            document.getElementById('keyStatus').style.color = '#10b981';
+            document.getElementById('daysRemaining').textContent = profile.daysRemaining;
+            
+            // Color code based on days remaining
+            const days = parseInt(profile.daysRemaining);
+            if (days <= 3) {
+              document.getElementById('daysRemaining').style.color = '#ef4444';
+            } else if (days <= 7) {
+              document.getElementById('daysRemaining').style.color = '#f59e0b';
+            } else {
+              document.getElementById('daysRemaining').style.color = '#10b981';
+            }
+          }
+          
+          // Update key info
+          document.getElementById('keyValue').value = profile.key;
+          document.getElementById('createdDate').value = profile.created ? 
+            new Date(profile.created).toLocaleString() : 'N/A';
+          document.getElementById('expiryDate').value = profile.expiresAt ? 
+            new Date(profile.expiresAt).toLocaleString() : 'Never';
+          document.getElementById('lastLogin').value = profile.lastLogin ? 
+            new Date(profile.lastLogin).toLocaleString() : 'First login';
+          document.getElementById('lastIP').textContent = profile.lastIP || 'Unknown';
+          
+          // Update login history
+          if (profile.loginHistory && profile.loginHistory.length > 0) {
+            let html = '';
+            profile.loginHistory.forEach((login, index) => {
+              html += `
+                <tr>
+                  <td style="color:#8b949e">${index + 1}</td>
+                  <td style="font-family:'JetBrains Mono';color:#58a6ff">${login.ip}</td>
+                  <td style="color:#c9d1d9;font-size:12px">${login.userAgent.substring(0, 50)}${login.userAgent.length > 50 ? '...' : ''}</td>
+                  <td style="color:#8b949e;font-size:12px">${new Date(login.timestamp).toLocaleString()}</td>
+                </tr>
+              `;
+            });
+            document.getElementById('loginHistory').innerHTML = html;
+          } else {
+            document.getElementById('loginHistory').innerHTML = `
+              <tr>
+                <td colspan="4" style="text-align:center;padding:20px;color:#8b949e">
+                  No login history available yet
+                </td>
+              </tr>
+            `;
+          }
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+        showToast('Error loading profile', 'error');
+      }
+    }
+
+    function copyKey() {
+      const keyInput = document.getElementById('keyValue');
+      keyInput.select();
+      document.execCommand('copy');
+      showToast('Key copied to clipboard!', 'success');
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <span class="toast-message">${message}</span>
+        <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+      `;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    function logout() {
+      localStorage.clear();
+      location.href = '/login';
+    }
+
+    // Load profile on page load
+    loadProfile();
+  </script>
+</body>
+</html>

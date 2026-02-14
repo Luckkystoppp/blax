@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>ULP Search</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo">Cloud Maxter </div>
+    <div class="nav-items">
+      <a href="/dashboard" class="nav-item"><span>📊</span> Dashboard</a>
+      <a href="/profile" class="nav-item"><span>👤</span> Profile</a>
+      <a href="/shop" class="nav-item active"><span>🛒</span> Shop TXT</a>
+      <a href="/hotmail" class="nav-item"><span>📧</span> Hotmail</a>
+      <a href="/ulp" class="nav-item"><span>🔍</span> ULP</a>
+      <a href="/bin" class="nav-item"><span>💳</span> BIN</a>
+      <a href="/settings" class="nav-item" id="sets" style="display:none"><span>⚙️</span> Settings</a>
+    </div>
+  </div>
+
+  <div class="header">
+    <div class="header-title">ULP Search - 5 Servers</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="user-info">
+        <div class="user-avatar">A</div>
+        <div id="role"></div>
+      </div>
+      <button onclick="logout()" class="btn btn-danger btn-sm">Exit</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card mb-4">
+      <div class="card-header">
+        <div class="card-title">Search Configuration</div>
+      </div>
+      <div class="card-body">
+        <div class="grid grid-3">
+          <div class="input-group">
+            <label class="input-label">Target</label>
+            <input id="target" class="input" placeholder="search keyword">
+          </div>
+          <div class="input-group">
+            <label class="input-label">Server</label>
+            <select id="server" class="select">
+              <option value="1">Server 1</option>
+              <option value="2">Server 2</option>
+              <option value="3">Server 3</option>
+              <option value="4">Server 4</option>
+              <option value="5">Server 5</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Total</label>
+            <select id="total" class="select">
+              <option value="100">100</option>
+              <option value="500">500</option>
+              <option value="1000" selected>1K</option>
+              <option value="5000">5K</option>
+              <option value="10000">10K</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-2" style="margin-top:12px">
+          <div class="input-group">
+            <label class="input-label">Timeout</label>
+            <select id="timeout" class="select">
+              <option value="10" selected>10s</option>
+              <option value="30">30s</option>
+              <option value="60">60s</option>
+              <option value="120">120s</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label class="input-label" style="opacity:0">.</label>
+            <div style="display:flex;gap:8px">
+              <button onclick="search()" class="btn btn-primary" style="flex:1">Search</button>
+              <button onclick="exp()" class="btn btn-success" id="expBtn" disabled>Export</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+        <div class="card-title">Results</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-size:11px;color:#8b949e">Count:</span>
+          <span id="count" style="font-family:'JetBrains Mono';font-size:13px;color:#58a6ff">0</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="terminal" id="term">
+          <div class="terminal-line">Ready to search...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+    
+    if (!token) location.href = '/login';
+    
+    document.getElementById('role').textContent = role.toUpperCase();
+    if (role === 'admin') document.getElementById('sets').style.display = 'flex';
+
+    let results = null;
+
+    async function search() {
+      const target = document.getElementById('target').value.trim();
+      if (!target) {
+        alert('Please enter a search target');
+        return;
+      }
+
+      const term = document.getElementById('term');
+      const server = document.getElementById('server').value;
+      const total = document.getElementById('total').value;
+      const timeout = document.getElementById('timeout').value;
+
+      term.innerHTML = '<div class="terminal-line">🔍 Searching on Server ' + server + '...</div>';
+      document.getElementById('expBtn').disabled = true;
+
+      try {
+        const res = await fetch('/api/ulpsearch', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token
+          },
+          body: JSON.stringify({ target, server, total, timeout })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          results = data.results || data.data;
+          const lines = typeof results === 'string' 
+            ? results.split('\n').filter(l => l.trim()) 
+            : results;
+
+          document.getElementById('count').textContent = lines.length;
+          document.getElementById('expBtn').disabled = false;
+
+          if (lines.length === 0) {
+            term.innerHTML = '<div class="terminal-line" style="color:#f59e0b">No results found</div>';
+          } else {
+            term.innerHTML = lines.slice(0, 50).map(l => 
+              `<div class="terminal-line">${l}</div>`
+            ).join('');
+            
+            if (lines.length > 50) {
+              term.innerHTML += `<div class="terminal-line" style="color:#8b949e">... +${lines.length - 50} more lines (click Export to download all)</div>`;
+            }
+          }
+        } else {
+          term.innerHTML = `<div class="terminal-line" style="color:#f85149">Error: ${data.message || 'Search failed'}</div>`;
+        }
+      } catch (e) {
+        term.innerHTML = `<div class="terminal-line" style="color:#f85149">Error: ${e.message}</div>`;
+      }
+    }
+
+    function exp() {
+      if (!results) return;
+      
+      const content = typeof results === 'string' ? results : results.join('\n');
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ulp_' + Date.now() + '.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function logout() {
+      localStorage.clear();
+      location.href = '/login';
+    }
+  </script>
+</body>
+</html>

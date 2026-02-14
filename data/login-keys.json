@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1771054270323,
+    "key": "XKECEJ-FICMD-XKEK20-X34ICKCK",
+    "role": "admin",
+    "keyName": "Admin Master Key",
+    "created": "2026-02-14T07:31:10.323Z",
+    "lastLogin": "2026-02-14T07:43:42.034Z",
+    "lastIP": "192.168.100.177"
+  },
+  {
+    "id": 1771054837573,
+    "key": "A3E2ED-64F078-C2A4FD-C40A3E",
+    "role": "user",
+    "keyName": "ccc",
+    "duration": "1week",
+    "created": "2026-02-14T07:40:37.573Z",
+    "expiresAt": "2026-02-21T07:40:37.573Z"
+  }
+]

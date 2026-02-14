@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Server Key</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+        <div class="card" style="max-width: 450px; width: 100%;">
+            <div style="text-align: center; margin-bottom: 32px;">
+                <div class="logo" style="font-size: 32px; margin-bottom: 16px; padding: 0; border: none;">
+                    SERVER KEY
+                </div>
+                <p style="color: var(--text-secondary); font-size: 14px;">Beautiful Purple Edition V3.0</p>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">🔑 Enter Your Key</label>
+                <input type="text" id="loginKey" class="input" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off">
+            </div>
+
+            <button onclick="login()" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 8px;">
+                <span>🚀</span>
+                Login
+            </button>
+
+                </code>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get base URL dynamically (works from any IP/domain)
+        const BASE_URL = window.location.origin;
+        
+        // Display current access URL
+        document.getElementById('currentUrl').textContent = BASE_URL;
+
+        // Handle enter key
+        document.getElementById('loginKey').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+
+        async function login() {
+            const key = document.getElementById('loginKey').value.trim();
+            
+            if (!key) {
+                showToast('Please enter your key', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('role', data.role);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    window.location.href = `${BASE_URL}/dashboard`;
+                } else {
+                    showToast(data.message || 'Login failed', 'error');
+                }
+            } catch (error) {
+                showToast('Connection error', 'error');
+                console.error('Login error:', error);
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
